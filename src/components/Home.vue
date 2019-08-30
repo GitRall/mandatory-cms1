@@ -1,5 +1,5 @@
 <template lang="html">
-  <div id="home-container" ref="scrollarea">
+  <div id="home-container">
     <app-blog-post v-for="blogPost in getBlogPosts" :blogPost="blogPost" :key="blogPost._id"></app-blog-post>
     <span class="bottom-line" ref="scrolltarget"></span>
     <div class="fab-scroll-top" @click="scrollTop"><i class="material-icons fab-scroll-top__icon">keyboard_arrow_up</i></div>
@@ -14,7 +14,6 @@ export default {
   data(){
     return {
       observer: null,
-      skipAmount: 0
     }
   },
   methods: {
@@ -32,12 +31,12 @@ export default {
             const cockpitToken = '2c8e037afef7c0fd1e68d119cfeb7d';
             axios.post(`http://localhost:8080/api/collections/get/articles?token=${cockpitToken}`, {
               limit: 10,
-              skip: this.skipAmount,
+              skip: this.$store.getters.getSkipAmount,
               sort: { _created: -1 }
             })
             .then((res) => {
               this.$store.dispatch('setBlogPosts', res.data.entries);
-              this.skipAmount += 10;
+              this.$store.dispatch('incrementSkipAmount');
             })
           }
         })
@@ -65,7 +64,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 0;
+  padding: 100px 0 30px 0;
 }
 .fab-scroll-top{
   position: fixed;
